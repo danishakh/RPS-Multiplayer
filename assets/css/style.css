@@ -1,0 +1,8 @@
+.player-cards {
+	display: flex;
+	justify-content: space-between;
+}
+
+button, div, form,input {
+      margin: 5px;
+}
