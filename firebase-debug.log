@@ -1,0 +1,39 @@
+[debug] [2017-12-16T07:43:24.827Z] ----------------------------------------------------------------------
+[debug] [2017-12-16T07:43:24.829Z] Command:       /usr/local/Cellar/node/8.6.0/bin/node /usr/local/bin/firebase serve
+[debug] [2017-12-16T07:43:24.829Z] CLI Version:   3.16.0
+[debug] [2017-12-16T07:43:24.829Z] Platform:      darwin
+[debug] [2017-12-16T07:43:24.829Z] Node Version:  v8.6.0
+[debug] [2017-12-16T07:43:24.829Z] Time:          Fri Dec 15 2017 23:43:24 GMT-0800 (PST)
+[debug] [2017-12-16T07:43:24.830Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2017-12-16T07:43:24.839Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2017-12-16T07:43:24.839Z] > authorizing via signed-in user
+[debug] [2017-12-16T07:43:24.841Z] >>> HTTP REQUEST GET https://admin.firebase.com/v1/projects/rps-multiplayer-96682  
+  
+ Fri Dec 15 2017 23:43:24 GMT-0800 (PST)
+[debug] [2017-12-16T07:43:25.294Z] <<< HTTP RESPONSE 200
+[debug] [2017-12-16T07:43:25.295Z] >>> HTTP REQUEST GET https://admin.firebase.com/v1/database/rps-multiplayer-96682/tokens  
+  
+ Fri Dec 15 2017 23:43:25 GMT-0800 (PST)
+[debug] [2017-12-16T07:43:25.930Z] <<< HTTP RESPONSE 200
+[info] 
+[info] === Serving from '/Users/akhtar/Desktop/code/Assignments/RPS-Multiplayer'...
+[info] 
+[debug] [2017-12-16T07:43:25.934Z] >>> HTTP REQUEST GET https://cloudresourcemanager.googleapis.com/v1/projects/rps-multiplayer-96682  
+  
+ Fri Dec 15 2017 23:43:25 GMT-0800 (PST)
+[debug] [2017-12-16T07:43:26.440Z] <<< HTTP RESPONSE 200
+[debug] [2017-12-16T07:43:26.441Z] >>> HTTP REQUEST GET https://mobilesdk-pa.googleapis.com/v1/projects/583803410216/clients/_:getWebAppConfig  
+  
+ Fri Dec 15 2017 23:43:26 GMT-0800 (PST)
+[debug] [2017-12-16T07:43:27.162Z] <<< HTTP RESPONSE 200
+[debug] [2017-12-16T07:43:27.184Z] TypeError: Cannot read property 'public' of undefined
+    at Server.<anonymous> (/usr/local/lib/node_modules/firebase-tools/lib/serve/hosting.js:34:17)
+    at Object.onceWrapper (events.js:314:30)
+    at emitNone (events.js:105:13)
+    at Server.emit (events.js:207:7)
+    at emitListeningNT (net.js:1371:10)
+    at _combinedTickCallback (internal/process/next_tick.js:135:11)
+    at process._tickDomainCallback (internal/process/next_tick.js:218:9)
+[error] 
+[error] Error: An unexpected error has occurred.
