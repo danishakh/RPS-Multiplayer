@@ -76,7 +76,7 @@ db.ref(playersRefPath).on('value', function(snapshot) {
 			$(".player1-stats").empty();
 			var statsList = $("<ul><li id='wins' >Wins: " + player1.wins + 
 				"</li> <li id='losses'>Losses: " + player1.losses + 
-				"</li> <li id='streak'>Best Streak: " + player1.streak + "</li></ul>");
+				"</li></ul>");
 			$(".player1-stats").append(statsList);
 
 			db.ref(gameRefPath+'/player1').set(player1Name);
@@ -93,7 +93,7 @@ db.ref(playersRefPath).on('value', function(snapshot) {
 			$(".player1-stats").empty();
 			var statsList = $("<ul><li id='wins' >Wins: 0" + 
 				"</li> <li id='losses'>Losses: 0"  +
-				"</li> <li id='streak'>Best Streak: 0</li></ul>");
+				"</li></ul>");
 			$(".player1-stats").append(statsList);
 
 		}
@@ -112,7 +112,7 @@ db.ref(playersRefPath).on('value', function(snapshot) {
 			$(".player2-stats").empty();
 			var statsList = $("<ul><li id='wins' >Wins: " + player2.wins + 
 				"</li> <li id='losses'>Losses: " + player2.losses + 
-				"</li> <li id='streak'>Best Streak: " + player2.streak + "</li></ul>");
+				"</li></ul>");
 			$(".player2-stats").append(statsList);
 
 			db.ref(gameRefPath+'/player2').set(player2Name);
@@ -129,7 +129,7 @@ db.ref(playersRefPath).on('value', function(snapshot) {
 			$(".player2-stats").empty();
 			var statsList = $("<ul><li id='wins' >Wins: 0" + 
 				"</li> <li id='losses'>Losses: 0"  +
-				"</li> <li id='streak'>Best Streak: 0</li></ul>");
+				"</li></ul>");
 			$(".player2-stats").append(statsList);
 		}
 
@@ -142,7 +142,10 @@ db.ref(playersRefPath).on('value', function(snapshot) {
 			// player2 = snapshot.child('2').val();
 			// player2Name = player2.name;
 
-			db.ref(gameRefPath+'/state').set(gameStates[1]);
+			if (turn == 1) {
+				db.ref(gameRefPath+'/state').set(gameStates[1]);
+			}
+			
 			//READY TO START GAME 
 			//ALLOW PLAYER 1 TO CHOOSE AN OPTION!
 
@@ -157,7 +160,7 @@ db.ref(playersRefPath).on('value', function(snapshot) {
 
 			db.ref(playersRefPath).remove();
 
-			$(".result-card").text('Waiting for players');
+			$(".result-header").text('Waiting for players');
 		}
 	}
 });
@@ -187,16 +190,21 @@ db.ref(gameRefPath).on('value', function(snapshot) {
 				console.log('player 1 - turn');
 				turn = 1;
 
-				$(".result-card").text('Player 1 Turn');
+				$(".result-header").text('Player 1 Turn');
 				//console.log('reached');
 			}
 			else if(snapshot.val().turn == 2) {
 				console.log('player2 - turn');
 				turn = 2;
 
-				$(".result-card").text('Player 2 Turn');
+				$(".result-header").text('Player 2 Turn');
 			}
 
+		}
+		else if ((player1 && player2) && (game.state == "done")) {
+			$(".p1Choice").text('Player 1: ' + player1.option);
+			$(".p2Choice").text('Player 2: ' + player2.option);
+			$(".result-card").text(game.result);
 		}
 
 	}
@@ -214,7 +222,7 @@ function addPlayerInfoToDOM(id, player) {
 	$(myClass + "-stats").empty();
 
 	// Add stats info to view
-	var statsList = $("<ul><li id='wins' >Wins: 0</li> <li id='losses'>Losses: 0</li> <li id='streak'>Best Streak: </li></ul>");
+	var statsList = $("<ul><li id='wins' >Wins: 0</li> <li id='losses'>Losses: 0</li></ul>");
 	$(myClass + "-stats").append(statsList);
 }
 
@@ -226,9 +234,7 @@ function addNewPlayerToDB(id, name) {
 		name: name,
 		wins: 0,
 		losses: 0,
-		option: "",
-		state: "ready",
-		streak: 0
+		option: ""
 	});
 }
 
@@ -237,68 +243,129 @@ function checkResult() {
 		if (player2.option == 'rock') {
 			console.log('tie - rock = rock');
 
+			$(".p1Choice").text('Player 1: ' + player1.option);
+			$(".p2Choice").text('Player 2: ' + player2.option);
 			$(".result-card").text('Tie!');
+
+			db.ref(gameRefPath+'/state').set(gameStates[2]);
+			db.ref(gameRefPath+'/result').set('Tie!');
+
 		}
 		else if(player2.option == 'paper') {
 			console.log('player 2 wins - rock < paper');
 
+			$(".p1Choice").text('Player 1: ' + player1.option);
+			$(".p2Choice").text('Player 2: ' + player2.option);
 			$(".result-card").text("Player 2 Wins!");
 
 			db.ref(player1RefPath+'/losses').set(player1.losses+1);
 			db.ref(player2RefPath+'/wins').set(player2.wins+1);
+
+			db.ref(gameRefPath+'/state').set(gameStates[2]);
+			db.ref(gameRefPath+'/result').set('Player 2 Wins!');
 		}	
 		else if(player2.option == 'scissors') {
 			console.log('player 1 wins - rock > scissors');
 
+			$(".p1Choice").text('Player 1: ' + player1.option);
+			$(".p2Choice").text('Player 2: ' + player2.option);
 			$(".result-card").text("Player 1 Wins!");
 
 			db.ref(player1RefPath+'/wins').set(player1.wins+1);
 			db.ref(player2RefPath+'/losses').set(player2.losses+1);
+
+			db.ref(gameRefPath+'/state').set(gameStates[2]);
+			db.ref(gameRefPath+'/result').set('Player 1 Wins');
 		}
 	}
 	else if (player1.option == 'paper') {
 		if(player2.option == 'rock') {
 			console.log('player 1 wins - paper > rock');
 
+			$(".p1Choice").text('Player 1: ' + player1.option);
+			$(".p2Choice").text('Player 2: ' + player2.option);
 			$(".result-card").text('Player 1 Wins!');
 
 			db.ref(player1RefPath+'/wins').set(player1.wins+1);
 			db.ref(player2RefPath+'/losses').set(player2.losses+1);
+			db.ref(gameRefPath+'/result').set('Player 1 Wins');
+
+			db.ref(gameRefPath+'/state').set(gameStates[2]);
 		}
 		else if(player2.option == 'paper') {
 			console.log('tie - paper = paper');
 
+			$(".p1Choice").text('Player 1: ' + player1.option);
+			$(".p2Choice").text('Player 2: ' + player2.option);
 			$(".result-card").text('Tie!');
+
+			db.ref(gameRefPath+'/state').set(gameStates[2]);
+			db.ref(gameRefPath+'/result').set('Tie!');
 		}
 		else if(player2.option == 'scissors') {
 			console.log('player 2 wins - paper < scissors');
 
+			$(".p1Choice").text('Player 1: ' + player1.option);
+			$(".p2Choice").text('Player 2: ' + player2.option);
 			$(".result-card").text('Player 2 Wins!');
 
 			db.ref(player1RefPath+'/losses').set(player1.losses+1);
 			db.ref(player2RefPath+'/wins').set(player2.wins+1);
+
+			db.ref(gameRefPath+'/state').set(gameStates[2]);
+			db.ref(gameRefPath+'/result').set('Player 2 Wins');
 		}
 	}
 	else if (player1.option == 'scissors') {
 		if(player2.option == 'rock') {
 			console.log('player 2 wins - scissors < rock');
 
+			$(".p1Choice").text('Player 1: ' + player1.option);
+			$(".p2Choice").text('Player 2: ' + player2.option);
+			$(".result-card").text('Player 2 Wins!');
+
 			db.ref(player1RefPath+'/losses').set(player1.losses+1);
 			db.ref(player2RefPath+'/wins').set(player2.wins+1);
+
+			db.ref(gameRefPath+'/state').set(gameStates[2]);
+			db.ref(gameRefPath+'/result').set('Player 2 Wins');
 		}
 		else if(player2.option == 'paper') {
 			console.log('player 1 wins - scissors > paper');
 
+			$(".p1Choice").text('Player 1: ' + player1.option);
+			$(".p2Choice").text('Player 2: ' + player2.option);
+			$(".result-card").text('Player 1 Wins!');
+
 			db.ref(player1RefPath+'/wins').set(player1.wins+1);
 			db.ref(player2RefPath+'/losses').set(player2.losses+1);
+
+
+			db.ref(gameRefPath+'/state').set(gameStates[2]);
+			db.ref(gameRefPath+'/result').set('Player 1 Wins');
 		}
 		else if(player2.option == 'scissors') {
 			console.log('tie - scissors = scissors');
 
+			db.ref(gameRefPath+'/state').set(gameStates[2]);
+			db.ref(gameRefPath+'/result').set('Tie!');
+
+			$(".p1Choice").text('Player 1: ' + player1.option);
+			$(".p2Choice").text('Player 2: ' + player2.option);
 			$(".result-card").text('Tie!');
+
+			
 		}
 	}
 }
+
+// function resetTurn() {
+// 	setTimeout(function() {
+// 		turn = 1;
+// 		db.ref(gameRefPath+'/turn').set(turn);
+// 		db.ref(gameRefPath+'/state').set(gameStates[1]);
+// 	}, 2000);
+// }
 
 // Add Player Name Button Clicked
 $("#add-player-name").on("click", function(event) {
@@ -329,7 +396,8 @@ $("#add-player-name").on("click", function(event) {
 				player1: player1Name,
 				player2: player2Name,
 				state: gameStates[0],
-				turn: turn
+				turn: turn,
+				result: ""
 			});
 
 			db.ref('/players/1').onDisconnect().remove();
@@ -345,7 +413,8 @@ $("#add-player-name").on("click", function(event) {
 				player1: player1Name,
 				player2: player2Name,
 				state: gameStates[0],
-				turn: turn
+				turn: turn,
+				result: ""
 			});
 
 			db.ref('/players/1').onDisconnect().remove();
@@ -361,7 +430,8 @@ $("#add-player-name").on("click", function(event) {
 				player1: player1Name,
 				player2: player2Name,
 				state: gameStates[0],
-				turn: turn
+				turn: turn,
+				result: ""
 			});
 
 			db.ref('/players/2').onDisconnect().remove();
@@ -381,6 +451,10 @@ $("#btn-rock").on("click", function(e) {
 		var player1Choice = $(this).attr('data-value');
 		console.log('player1 chose: ' + $(this).attr('data-value'));
 
+		$(".p1Choice").text('Player 1: ');
+		$(".p2Choice").text('Player 2: ');
+		$(".result-card").empty();
+
 		db.ref().child('/players/1/option').set(player1Choice);
 
 		turn = 2;
@@ -394,8 +468,11 @@ $("#btn-rock").on("click", function(e) {
 
 		checkResult();
 		//set the turn back to 1
+		//resetTurn();
+
 		turn = 1;
 		db.ref(gameRefPath+'/turn').set(turn);
+		db.ref(gameRefPath+'/state').set(gameStates[1]);
 
 	}
 
@@ -409,6 +486,10 @@ $("#btn-paper").on("click", function(e) {
 		var player1Choice = $(this).attr('data-value');
 		console.log('player1 chose: ' + $(this).attr('data-value'));
 
+		$(".p1Choice").text('Player 1: ');
+		$(".p2Choice").text('Player 2: ');
+		$(".result-card").empty();
+
 		db.ref().child('/players/1/option').set(player1Choice);
 
 		turn = 2;
@@ -423,9 +504,11 @@ $("#btn-paper").on("click", function(e) {
 
 		checkResult();
 		//set the turn back to 1
+		//resetTurn();
+
 		turn = 1;
 		db.ref(gameRefPath+'/turn').set(turn);
-
+		db.ref(gameRefPath+'/state').set(gameStates[1]);
 	}
 });
 
@@ -436,6 +519,10 @@ $("#btn-scissors").on("click", function(e) {
 	if ((player1 && player2) && (myPlayerName == player1.name) && (turn == 1)) {
 		var player1Choice = $(this).attr('data-value');
 		console.log('player1 chose: ' + $(this).attr('data-value'));
+
+		$(".p1Choice").text('Player 1: ');
+		$(".p2Choice").text('Player 2: ');
+		$(".result-card").empty();
 
 		db.ref().child('/players/1/option').set(player1Choice);
 
@@ -452,10 +539,14 @@ $("#btn-scissors").on("click", function(e) {
 		checkResult();
 
 		//set the turn back to 1
+		//resetTurn();
+
 		turn = 1;
 		db.ref(gameRefPath+'/turn').set(turn);
+		db.ref(gameRefPath+'/state').set(gameStates[1]);
 	}
 });
+
 
 
 
